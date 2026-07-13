@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Diagnóstico Baummer Semijoias</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F7F5F2;color:#1A1A1A;padding:24px}
+.container{max-width:900px;margin:0 auto}
+.header{margin-bottom:24px}
+.header h1{font-size:20px;font-weight:600;color:#1A1A1A;margin-bottom:4px}
+.header p{font-size:13px;color:#6B6B6B}
+.fase-banner{background:#1A1A1A;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.fase-banner-text{color:#fff;font-size:13px;font-weight:500}
+.fase-banner-sub{color:#9B9B9B;font-size:12px;margin-top:2px}
+.fase-banner-icon{font-size:20px;flex-shrink:0}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.metric{background:#fff;border-radius:10px;padding:14px 16px;border:0.5px solid #E8E0D5}
+.metric-label{font-size:11px;color:#6B6B6B;margin-bottom:4px}
+.metric-value{font-size:24px;font-weight:600;color:#1A1A1A}
+.metric-sub{font-size:11px;color:#9B9B9B;margin-top:2px}
+.metric.destaque{border-color:#C4A882;background:#FDFAF7}
+.progress-wrap{margin-bottom:24px;background:#fff;border-radius:10px;padding:16px;border:0.5px solid #E8E0D5}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#6B6B6B;margin-bottom:6px}
+.progress-bar{height:6px;background:#F2F2F2;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:#C4A882}
+.achado-central{background:#1A1A1A;border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.achado-central-label{font-size:10px;font-weight:700;color:#C4A882;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.achado-central-text{font-size:14px;color:#fff;line-height:1.6;font-style:italic}
+.achado-central-fonte{font-size:11px;color:#6B6B6B;margin-top:8px}
+.entrega-banner{background:#E8F4EA;border-radius:10px;padding:14px 18px;margin-bottom:16px;border:0.5px solid #A8D5B0}
+.entrega-banner-label{font-size:10px;font-weight:700;color:#2D6A3F;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.entrega-banner-text{font-size:13px;color:#1A3A22;line-height:1.6}
+.entrega-banner-sub{font-size:11px;color:#4A7A55;margin-top:6px}
+.proximos{background:#EEE6FB;border-radius:10px;padding:14px 16px;border:0.5px solid #C0A8E8;margin-bottom:24px}
+.proximos-title{font-size:12px;font-weight:600;color:#3D1B6B;margin-bottom:8px}
+.proximo-item{font-size:12px;color:#3D1B6B;display:flex;gap:8px;align-items:flex-start;margin-bottom:5px}
+.section-title{font-size:13px;font-weight:600;color:#6B6B6B;text-transform:uppercase;letter-spacing:.05em;margin:20px 0 10px}
+.entrevistas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+.ent{background:#fff;border-radius:10px;padding:12px 14px;border:0.5px solid #E8E0D5}
+.ent-name{font-size:13px;font-weight:600;color:#1A1A1A;margin-bottom:2px}
+.ent-role{font-size:11px;color:#6B6B6B;margin-bottom:8px}
+.ent-scores{display:flex;gap:8px;margin-top:8px;padding-top:8px;border-top:0.5px solid #F0EDE8}
+.ent-score{text-align:center;flex:1}
+.ent-score-num{font-size:16px;font-weight:600;color:#1A1A1A}
+.ent-score-lbl{font-size:9px;color:#9B9B9B}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-ok{background:#E8F4EA;color:#2D6A3F}
+.badge-next{background:#EEE6FB;color:#3D1B6B}
+.badge-pend{background:#F5F5F5;color:#6B6B6B;border:0.5px solid #DDD}
+.eixos{display:flex;flex-direction:column;gap:8px}
+.eixo{background:#fff;border-radius:10px;border:0.5px solid #E8E0D5;overflow:hidden}
+.eixo-header{display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.eixo-header:hover{background:#FDFAF7}
+.eixo-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.eixo-title{font-size:14px;font-weight:500;color:#1A1A1A}
+.eixo-sub{font-size:11px;color:#6B6B6B;margin-top:2px}
+.mat-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.chevron{font-size:11px;color:#9B9B9B;transition:transform .2s;flex-shrink:0}
+.eixo.open .chevron{transform:rotate(180deg)}
+.eixo-body{display:none;border-top:0.5px solid #F0EDE8;padding:16px}
+.eixo.open .eixo-body{display:block}
+.mat-bar{height:6px;background:#F2F2F2;border-radius:3px;margin-bottom:16px;overflow:hidden}
+.mat-fill{height:100%;border-radius:3px}
+.sec-label{font-size:11px;font-weight:600;color:#6B6B6B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;margin-top:12px}
+.sec-label:first-of-type{margin-top:0}
+.achado{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;margin-bottom:6px}
+.achado-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.achado-text{color:#3D3D3D}
+.achado-text.hyp{color:#6B6B6B;font-style:italic}
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;margin-left:6px}
+.tag-conf{background:#E8F4EA;color:#2D6A3F}
+.tag-hyp{background:#FFF8E6;color:#8A6200}
+.tag-novo{background:#EEE6FB;color:#3D1B6B}
+.src-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;margin-left:4px;vertical-align:middle}
+.src-leo2{background:#F0EDE8;color:#5A4A3A}
+.src-kelly{background:#E6F1FB;color:#185FA5}
+.src-f2{background:#EEE6FB;color:#3D1B6B}
+.alerta{background:#FEECEC;border-radius:8px;padding:10px 14px;font-size:12px;color:#8B1A1A;margin-top:10px;border-left:3px solid #E24B4A}
+.cruzamento{background:#EEE6FB;border-radius:8px;padding:10px 14px;font-size:12px;color:#3D1B6B;margin-top:10px;border-left:3px solid #9B6FD4}
+.alerta-fiscal{background:#FFF3CD;border-radius:8px;padding:10px 14px;font-size:12px;color:#6B4C00;margin-top:10px;border-left:3px solid #F0C040}
+.conclusao{background:#F0EDE8;border-radius:8px;padding:10px 14px;font-size:12px;color:#3A2E24;margin-top:0;border-left:3px solid #C4A882;margin-bottom:10px}
+.f3box{background:#E8F4EA;border-radius:8px;padding:10px 14px;font-size:12px;color:#1A3A22;margin-top:10px;border-left:3px solid #4A9E5C}
+.fonte{font-size:11px;color:#9B9B9B;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>Diagnóstico Estratégico — Baummer Semijoias</h1>
+  <p>Diagnóstico entregue · Reunião de entrega 06/07/2026 · Fase 3 — Implementação iniciando</p>
+</div>
+
+<div class="fase-banner">
+  <div class="fase-banner-icon">✦</div>
+  <div>
+    <div class="fase-banner-text">Diagnóstico concluído e entregue — 06/07/2026</div>
+    <div class="fase-banner-sub">F1 + F2 encerradas · Relatório entregue em PDF · Sócios propõem liderança de implementação com autonomia total · Fase 3 a formalizar</div>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="metric destaque"><div class="metric-label">Status do projeto</div><div class="metric-value">F3</div><div class="metric-sub">Implementação a formalizar</div></div>
+  <div class="metric"><div class="metric-label">Eixos entregues</div><div class="metric-value">6/6</div><div class="metric-sub">5 em Nível 1 · 1 em Nível 2</div></div>
+  <div class="metric"><div class="metric-label">Faturamento médio/rede</div><div class="metric-value">R$60,7k</div><div class="metric-sub">33 lojas · abr/25–mar/26</div></div>
+  <div class="metric"><div class="metric-label">Payback modelo</div><div class="metric-value">2 anos</div><div class="metric-sub">Margem líquida 15% · conservador</div></div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label"><span>Progresso geral do projeto</span><span>67% — diagnóstico entregue, implementação a iniciar</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:67%"></div></div>
+</div>
+
+<div class="achado-central">
+  <div class="achado-central-label">Achado central — Confirmado F1 + F2</div>
+  <div class="achado-central-text">"Não tem franquia. Tem um monte de quiosques com o nome Baummer. São nossos distribuidores." — Leonardo, 13/05/2026<br><br>A rede cresceu além da estrutura que a suporta. Expandiu por relacionamento, funcionou no improviso e chegou até aqui. O improviso não escala, não se replica e não sobrevive à saída das pessoas que o sustentam.</div>
+  <div class="achado-central-fonte">— Validado por 8 entrevistas · análise financeira de 33 unidades · Relatório entregue 06/07/2026</div>
+</div>
+
+<div class="entrega-banner">
+  <div class="entrega-banner-label">Reunião de entrega — 06/07/2026 · Resultado</div>
+  <div class="entrega-banner-text">Diagnóstico recebido por Leonardo e Leandro. Sócios reconheceram os achados e propuseram que Jaqueline liderasse a implementação com <strong>autonomia total</strong> para decisões estratégicas. Mencionaram possibilidade futura de sociedade. Crescimento de 171% no faturamento da revenda nos últimos 12 meses foi destacado por Leandro como contexto positivo.</div>
+  <div class="entrega-banner-sub">Próximo passo: formalizar proposta para Fase 3 (Plano de Ação + Implementação)</div>
+</div>
+
+<div class="proximos">
+  <div class="proximos-title">Próximas etapas confirmadas na reunião de entrega</div>
+  <div class="proximo-item"><span>→</span><span><strong>Jaqueline:</strong> Entregar Plano de Ação Estratégico em até 4 semanas a partir de 06/07</span></div>
+  <div class="proximo-item"><span>→</span><span><strong>Jaqueline:</strong> Formalizar proposta de contratação para Fase 3 — implementação com liderança e autonomia</span></div>
+  <div class="proximo-item"><span>→</span><span><strong>Leonardo + Leandro:</strong> Reativar Instagram institucional da Baummer (parado desde set/2024)</span></div>
+  <div class="proximo-item"><span>→</span><span><strong>Leonardo + Leandro:</strong> Planejar compras com base em histórico de vendas — estruturar calendário de coleção</span></div>
+  <div class="proximo-item"><span>→</span><span><strong>Grupo:</strong> Regularizar marca no INPI · Padronizar DRE da rede · Documentar perfil de cliente e franqueado ideal</span></div>
+  <div class="proximo-item"><span>→</span><span><strong>Grupo:</strong> Designar responsável pelo relacionamento contínuo com franqueados</span></div>
+</div>
+
+<div class="section-title">Fase 1 — Equipe interna</div>
+<div class="entrevistas">
+  <div class="ent"><div class="ent-name">Leonardo</div><div class="ent-role">Sócio principal</div><span class="badge badge-ok">22/04 + 13/05 · Fechamento</span></div>
+  <div class="ent"><div class="ent-name">Leandro</div><div class="ent-role">Sócio / operações</div><span class="badge badge-ok">Concluída 24/04</span></div>
+  <div class="ent"><div class="ent-name">Andreia</div><div class="ent-role">Sócia / produto</div><span class="badge badge-ok">Concluída 30/04</span></div>
+  <div class="ent"><div class="ent-name">Vitor + Giovana</div><div class="ent-role">Pontos de apoio</div><span class="badge badge-ok">Concluída 24/04</span></div>
+  <div class="ent"><div class="ent-name">Kelly</div><div class="ent-role">Gerente financeira</div><span class="badge badge-ok">Concluída 12/05</span></div>
+</div>
+
+<div class="section-title">Fase 2 — Franqueados</div>
+<div class="entrevistas">
+  <div class="ent">
+    <div class="ent-name">Luis Renato</div>
+    <div class="ent-role">8 unidades · Campo Grande (MS)</div>
+    <span class="badge badge-ok">Concluída 22/05</span>
+    <div class="ent-scores">
+      <div class="ent-score"><div class="ent-score-num">3</div><div class="ent-score-lbl">gestão</div></div>
+      <div class="ent-score"><div class="ent-score-num">4</div><div class="ent-score-lbl">vínculo</div></div>
+      <div class="ent-score"><div class="ent-score-num">3</div><div class="ent-score-lbl">referência</div></div>
+    </div>
+  </div>
+  <div class="ent">
+    <div class="ent-name">Marcela</div>
+    <div class="ent-role">1 unidade · Araraquara (SP) · ex-vendedora</div>
+    <span class="badge badge-ok">Concluída 27/05</span>
+    <div class="ent-scores">
+      <div class="ent-score"><div class="ent-score-num">4</div><div class="ent-score-lbl">gestão</div></div>
+      <div class="ent-score"><div class="ent-score-num">5</div><div class="ent-score-lbl">vínculo</div></div>
+      <div class="ent-score"><div class="ent-score-num">5</div><div class="ent-score-lbl">referência</div></div>
+    </div>
+  </div>
+  <div class="ent">
+    <div class="ent-name">Ismael</div>
+    <div class="ent-role">5 unidades · Goiânia (GO) · ex-Chilli Beans</div>
+    <span class="badge badge-ok">Concluída 10/06</span>
+    <div class="ent-scores">
+      <div class="ent-score"><div class="ent-score-num">3</div><div class="ent-score-lbl">gestão</div></div>
+      <div class="ent-score"><div class="ent-score-num">4</div><div class="ent-score-lbl">vínculo</div></div>
+      <div class="ent-score"><div class="ent-score-num">4</div><div class="ent-score-lbl">referência</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Maturidade por eixo — Resultado final do diagnóstico</div>
+<div class="eixos" id="eixos"></div>
+
+</div>
+
+<script>
+const eixos = [
+  {
+    num:"01",
+    title:"Modelo de negócio e posicionamento",
+    sub:"Identidade, marca e público-alvo",
+    mat:1, matLabel:"Inexistente",
+    conclusao:"Opera como distribuidora, não como franqueadora. Sem identidade declarada, sem visão compartilhada entre os sócios, sem cultura de rede. Tomadores de decisão distantes da operação real. Concorrência ataca comissões (20–40%) e qualidade — a Baummer não tem posicionamento para responder.",
+    f3:"Construir posicionamento declarado e arquitetura de coleção (perenes + drops de tendência + drops temáticos) como base de toda a reestruturação de produto e marketing.",
+    gaps:[
+      {t:"Baummer opera como distribuidora — sem padronização, sem cultura de rede, sem política comercial",conf:true,src:"leo2",fontes:"Leonardo · 13/05 — declaração espontânea",novo:false},
+      {t:"Critério de seleção de produto é preço, não estética — compradoras sem formação em moda preenchem faixas de custo com a peça disponível mais barata",conf:true,src:"f2",fontes:"Luis Renato + Marcela + Ismael · F2",novo:false},
+      {t:"Instagram parado desde set/2024 — sem autoridade digital, sem credencial para cobrar royalties com legitimidade ou atrair franqueados fora do círculo próximo",conf:true,src:"f2",fontes:"Verificável publicamente · Marcela · Luis Renato",novo:false},
+      {t:"Sócios descrevem a marca de formas diferentes: Leonardo = custo-benefício · Andreia = presente sofisticado · Leandro = suporte e treinamento",conf:true,src:null,fontes:"Leonardo + Andreia + Leandro (3 fontes)",novo:false},
+      {t:"Marca sem registro no INPI — conflito com Baume & Mercier · recurso em análise · BMR já registrada como alternativa",conf:true,src:"leo2",fontes:"Leonardo · 13/05",novo:false},
+    ],
+    oportunidades:[
+      {t:"Renovação semanal de produto e lead time baixo são diferenciais reais reconhecidos pelos sócios e pelos franqueados",conf:true,src:null,fontes:"Leonardo + Andreia + Leandro + Ismael",novo:false},
+      {t:"Arquitetura de coleção em três camadas não exige mais investimento — exige critério e calendário",conf:false,src:"f2",fontes:"Análise técnica F2",novo:false},
+      {t:"Reativação do Instagram: compromisso assumido por Leonardo e Leandro na reunião de entrega (06/07)",conf:true,src:null,fontes:"Reunião de entrega · 06/07/2026",novo:true},
+      {t:"Criação do departamento comercial com adesão declarada do dono — recomendação executável",conf:true,src:"leo2",fontes:"Leonardo · 13/05 + Reunião de entrega",novo:false},
+    ],
+    cruzamento:"A Baummer atua num segmento de moda, desejo e pertencimento — mas compra e opera com lógica de distribuidora de commodity. Para o Leonardo: não é que os franqueados reclamam do produto. É que o modelo atual limita o teto de faturamento de cada loja.",
+    alerta:null, alertaFiscal:null
+  },
+
+  {
+    num:"02",
+    title:"Conhecimento do cliente ideal",
+    sub:"Perfil do consumidor e do franqueado",
+    mat:1, matLabel:"Inexistente",
+    conclusao:"Nenhum perfil de cliente documentado. Os franqueados que performam bem chegaram ao conhecimento do cliente por iniciativa própria. A franqueadora nunca entregou esse ativo. Baixa recorrência de clientes percebida na rede — sinal de ausência de fidelização como processo.",
+    f3:"Documentar perfil de cliente com base nos dados do Vitor + práticas dos franqueados-modelo. Documentar perfil ideal de franqueado com base em Marcela como referência.",
+    gaps:[
+      {t:"Nenhum perfil de cliente documentado — Andreia se baseia em vivência antiga e não visita mais as lojas",conf:true,src:null,fontes:"Leonardo + Andreia",novo:false},
+      {t:"Baixa recorrência de clientes — Luis Renato: 'cada vez menos clientes voltam'",conf:true,src:"f2",fontes:"Luis Renato · F2",novo:false},
+      {t:"Sem critérios objetivos de aprovação de franqueado — entrada por indicação ou vínculo pessoal",conf:true,src:null,fontes:"Leonardo + Leandro · padrão confirmado em F2",novo:false},
+    ],
+    oportunidades:[
+      {t:"Marcela é o caso-modelo do franqueado ideal: ex-vendedora, conhece o produto, construiu atendimento e Instagram por conta própria",conf:true,src:"f2",fontes:"Leonardo + Marcela · F2",novo:false},
+      {t:"Ismael: cadastro de clientes com 92% de preenchimento e voucher de retorno em 30 dias — iniciativa replicável como padrão de rede",conf:true,src:"f2",fontes:"Ismael · F2",novo:false},
+      {t:"Documentar perfil de cliente e franqueado ideal: compromisso assumido pelo grupo na reunião de entrega",conf:true,src:null,fontes:"Reunião de entrega · 06/07/2026",novo:true},
+    ],
+    cruzamento:"Os três franqueados desenvolveram estratégias de fidelização por conta própria. Nenhum modelo veio da franqueadora. Isso é oportunidade: as melhores práticas já existem na rede — falta sistematizá-las.",
+    alerta:null, alertaFiscal:null
+  },
+
+  {
+    num:"03",
+    title:"Análise de praças e shoppings",
+    sub:"Localização, potencial e critérios",
+    mat:1, matLabel:"Inexistente",
+    conclusao:"Expansão sempre por oportunidade e relacionamento. Sem processo estruturado de escolha de ponto. Sem acompanhamento de performance por unidade. Sem suporte em inaugurações. Caso de repasse inviável confirmado — franqueada comprou loja inviável e fechou.",
+    f3:"Criar metodologia de análise de praça com base nos dados do Vitor (33 unidades). Protocolo de inauguração e checklist de viabilidade como pré-condição de qualquer novo ponto.",
+    gaps:[
+      {t:"Sem critérios documentados para escolha de praça — expansão sempre orgânica",conf:true,src:null,fontes:"Leonardo + Leandro + Andreia (3 fontes)",novo:false},
+      {t:"Abertura de novas unidades sem suporte de divulgação local — caso Bauru sem nenhum apoio de marketing",conf:true,src:"f2",fontes:"Luis Renato · F2",novo:false},
+      {t:"Repasse de loja própria sem análise de viabilidade — franqueada comprou loja inviável e fechou logo depois",conf:true,src:"kelly",fontes:"Kelly · 12/05",novo:false},
+    ],
+    oportunidades:[
+      {t:"Araraquara: R$20k → R$90k/mês com a mesma praça — crescimento 4,5x sem abertura de nova unidade",conf:true,src:"f2",fontes:"Marcela · F2",novo:false},
+      {t:"33 unidades com dados de faturamento (Vitor) — base para análise de praça e ranking por performance",conf:true,src:"leo2",fontes:"Vitor · dados entregues",novo:false},
+      {t:"Leandro tem contatos com gestores de shoppings — ativo disponível para expansão quando estrutura estiver pronta",conf:true,src:null,fontes:"Leandro",novo:false},
+    ],
+    cruzamento:null,
+    alerta:"Dois eventos documentados sem processo: repasse inviável (Kelly) e inauguração sem suporte (Luis Renato). Antes de qualquer nova abertura: checklist de viabilidade por praça e protocolo de inauguração.",
+    alertaFiscal:null
+  },
+
+  {
+    num:"04",
+    title:"Viabilidade financeira das unidades",
+    sub:"Modelo financeiro e retorno real",
+    mat:2, matLabel:"Inicial",
+    conclusao:"Único eixo em Nível 2. Modelo de referência construído e validado: faturamento médio R$60.700/mês (33 lojas), CMV 34–35%, payback 2 anos, margem líquida 15% em premissa conservadora. O modelo existe — falta torná-lo processo interno vivo e aplicável por praça antes de cada aprovação de franqueado.",
+    f3:"Transformar o modelo financeiro em protocolo de aprovação de novos franqueados. Criar simulação por praça com variáveis reais. Regularizar situação fiscal dos royalties com avaliação jurídico-tributária.",
+    gaps:[
+      {t:"Modelo financeiro existe como referência — mas não é processo interno. Sem DRE padrão entregue ao franqueado candidato",conf:true,src:null,fontes:"Diagnóstico · Julho 2026",novo:false},
+      {t:"Royalties cobrados sem emissão de NF de serviço — situação fiscalmente irregular",conf:true,src:"kelly",fontes:"Kelly · 12/05 — 3 fontes",novo:false},
+      {t:"Isenções a franqueados sem política documentada — Ismael isento por tempo indeterminado (~20% da receita)",conf:true,src:"f2",fontes:"Ismael · F2",novo:false},
+      {t:"Franqueados operam com caixa apertado: compram a 30 dias e vendem a prazo ao cliente final",conf:true,src:"kelly",fontes:"Kelly · 12/05",novo:false},
+      {t:"Luis Renato: ~R$100k em defeitos acumulados sem devolução por falta de confiança no processo",conf:true,src:"f2",fontes:"Luis Renato · F2",novo:false},
+    ],
+    oportunidades:[
+      {t:"Markup 1,7 para franqueado (1,5 para Infinita) — viabilidade real confirmada. Diferencial não comunicado como argumento de captação",conf:true,src:"kelly",fontes:"Kelly · 12/05",novo:false},
+      {t:"Payback de 2 anos e margem de 15% em premissa conservadora — argumento técnico sólido para COF e captação",conf:true,src:null,fontes:"Modelo financeiro · Diagnóstico",novo:true},
+      {t:"Padronizar DRE da rede: compromisso do grupo assumido na reunião de entrega",conf:true,src:null,fontes:"Reunião de entrega · 06/07/2026",novo:true},
+    ],
+    cruzamento:"O DRE de loja própria (Brasília) foi descartado por inconsistências. Os dados do Vitor (33 unidades) são a base real do modelo. Isso é mais representativo para o COF do que qualquer loja isolada.",
+    alerta:null,
+    alertaFiscal:"RISCO FISCAL: NF de serviço de royalties não emitida para evitar ISS. Situação irregular. Isenção de Ismael sem prazo ou política. Ambos precisam de avaliação jurídico-tributária antes de qualquer regularização."
+  },
+
+  {
+    num:"05",
+    title:"Captação e aprovação de franqueados",
+    sub:"Processo de seleção e perfil ideal",
+    mat:1, matLabel:"Inexistente",
+    conclusao:"Rede montada por vínculos pessoais. Sem departamento comercial, sem processo ativo, sem critério documentado. Sem Instagram ativo, sem COF atualizada e sem dados de viabilidade: a Baummer não tem argumento para atrair franqueado fora do círculo próximo. Franqueados vendendo produtos não autorizados e praticando preços divergentes — governança inexistente.",
+    f3:"Criar departamento comercial como primeira estrutura da franqueadora. Formalizar critério de seleção com base no perfil Marcela. Renovação contratual como janela para inserir cláusulas de padronização.",
+    gaps:[
+      {t:"Sem departamento comercial — principal gap declarado pelo próprio Leonardo",conf:true,src:"leo2",fontes:"Leonardo · 13/05",novo:false},
+      {t:"Rede montada por indicação próxima — irmão dos sócios, ex-vendedora, ex-supervisor. Sem processo ativo de captação",conf:true,src:"f2",fontes:"Padrão confirmado em F2 · 3/3 entrevistas",novo:false},
+      {t:"Franqueados vendendo produtos não autorizados e praticando preços divergentes — caso São Carlos confirmado por Marcela",conf:true,src:"f2",fontes:"Marcela · F2",novo:false},
+      {t:"'Liberdade total' percebida como benefício por Luis Renato — rede não internalizou o valor do padrão de marca",conf:true,src:"f2",fontes:"Luis Renato · F2",novo:false},
+    ],
+    oportunidades:[
+      {t:"Criação do departamento comercial: adesão do tomador de decisão confirmada espontaneamente e reafirmada na reunião de entrega",conf:true,src:null,fontes:"Leonardo · 13/05 + Reunião de entrega · 06/07",novo:false},
+      {t:"Marcela como modelo de critério de seleção: ex-gerente de quiosque, conhece o produto, tem vínculo com a marca",conf:true,src:"f2",fontes:"Leonardo + Marcela · F2",novo:false},
+      {t:"Renovação contratual como janela estratégica para inserir cláusulas de padronização sem confronto direto",conf:false,src:null,fontes:"Análise metodológica",novo:false},
+      {t:"Visitas presenciais anuais: Marcela pediu explicitamente — baixo custo, alto impacto em governança e confiança",conf:true,src:"f2",fontes:"Marcela · F2",novo:false},
+    ],
+    cruzamento:"Os melhores franqueados querem mais conexão com a rede — não mais pressão. A captação futura depende de entregar o que se promete. Sem suporte real, sem argumento.",
+    alerta:null, alertaFiscal:null
+  },
+
+  {
+    num:"06",
+    title:"Estrutura da franqueadora",
+    sub:"COF, manuais, suporte, governança e padrão",
+    mat:1, matLabel:"Inexistente",
+    conclusao:"COF desatualizada, manuais extintos, suporte inexistente, Instagram parado desde set/2024, INPI sem registro. Giovana saiu sem substituto. IA de atendimento ineficaz. Processo de pedido opaco. A sequência de reconstrução necessária — e não opcional — é: COF + identidade da franqueadora → área comercial → produto → marketing e digital → rede colaborativa.",
+    f3:"Sequência de 5 blocos validada. Cada bloco é pré-condição do seguinte. Jaqueline lidera com autonomia total — proposta de contratação a formalizar.",
+    gaps:[
+      {t:"COF desatualizada — CNPJ novo, balanços ausentes, dados não refletem a operação real",conf:true,src:null,fontes:"Kelly + Leonardo · diagnóstico",novo:false},
+      {t:"Manuais de franquia extintos — não existem mais",conf:true,src:null,fontes:"Leonardo + Leandro",novo:false},
+      {t:"Suporte operacional inexistente — os três franqueados responderam variações de 'não tem para onde ir'",conf:true,src:"f2",fontes:"Luis Renato + Marcela + Ismael · 3/3 fontes F2",novo:false},
+      {t:"Giovana saiu — único canal humano de contato diário com franqueados eliminado, sem substituto definido",conf:true,src:"f2",fontes:"Ismael + Marcela · F2",novo:false},
+      {t:"IA de atendimento ('Balminha') ineficaz — franqueados tentaram e desistiram. Resolve só rastreamento",conf:true,src:"f2",fontes:"Luis Renato + Ismael · F2",novo:false},
+      {t:"Feedback da rede ignorado sistematicamente — Ismael parou de contribuir, Luis Renato acumulou R$100k em defeitos sem processar",conf:true,src:"f2",fontes:"Ismael + Luis Renato · F2",novo:false},
+      {t:"Comunicação estratégica nula: prata 925 descontinuada sem aviso, coleção Ânima lançada sem contexto",conf:true,src:"f2",fontes:"Ismael · F2",novo:false},
+      {t:"Governança societária centralizada — Leonardo toma todas as decisões, inclusive operacionais",conf:true,src:"leo2",fontes:"Leonardo · 13/05",novo:false},
+      {t:"Kelly acumula função de suporte informal — sintoma de ausência de estrutura",conf:true,src:"kelly",fontes:"Kelly · 12/05",novo:false},
+    ],
+    oportunidades:[
+      {t:"CNPJ da franqueadora aprovado — base legal para NF, contratos e COF com CNPJ correto",conf:true,src:"leo2",fontes:"Leonardo · 13/05",novo:false},
+      {t:"Sócios propõem liderança da implementação com autonomia total para Jaqueline — condição rara e favorável para execução",conf:true,src:null,fontes:"Reunião de entrega · 06/07/2026",novo:true},
+      {t:"Vitor: potencial de analista de dados com IA — ativo para apoio à implementação",conf:true,src:null,fontes:"Leonardo · Reunião de entrega · 06/07",novo:true},
+      {t:"Kelly: aliada natural para estruturação financeira — aberta (5/5), competente, frustrada com a falta de processos",conf:true,src:"kelly",fontes:"Kelly · 12/05",novo:false},
+      {t:"Programa de treinamento anterior: 50% de adesão, nota 7,5–8,2 — benchmark sólido para reconstrução",conf:true,src:null,fontes:"Leandro",novo:false},
+      {t:"Designar responsável pelo relacionamento com franqueados: compromisso do grupo assumido na reunião de entrega",conf:true,src:null,fontes:"Reunião de entrega · 06/07/2026",novo:true},
+    ],
+    cruzamento:"Os melhores franqueados criaram seus próprios modelos de gestão por necessidade — ausência de suporte não é percebida como problema porque nunca houve referência. Isso não é satisfação: é ausência de parâmetro. O padrão médio e fraco da rede opera no improviso total.",
+    alerta:"A sequência de reconstrução não é opcional. Cada bloco é pré-condição do seguinte. Criar rede colaborativa sem área comercial ativa gera expectativa sem entrega. Criar marketing sem produto coerente amplifica o problema.",
+    alertaFiscal:null
+  },
+];
+
+function matColor(m){
+  if(m<=1)return{bg:'#FEECEC',text:'#8B1A1A',fill:'#E24B4A'};
+  if(m===2)return{bg:'#FEF0E8',text:'#A03A10',fill:'#D4752A'};
+  if(m===3)return{bg:'#E6F1FB',text:'#185FA5',fill:'#378ADD'};
+  return{bg:'#E8F4EA',text:'#2D6A3F',fill:'#4A9E5C'};
+}
+
+function srcTag(src){
+  if(!src) return '';
+  if(src==='leo2') return '<span class="src-tag src-leo2">Leo F1</span>';
+  if(src==='kelly') return '<span class="src-tag src-kelly">Kelly</span>';
+  if(src==='f2') return '<span class="src-tag src-f2">F2</span>';
+  return '';
+}
+
+const cont = document.getElementById('eixos');
+eixos.forEach((e,i) => {
+  const mc = matColor(e.mat);
+  const card = document.createElement('div');
+  card.className = 'eixo';
+  card.innerHTML = `
+    <div class="eixo-header" onclick="toggle(${i})">
+      <div class="eixo-num" style="background:${mc.bg};color:${mc.text}">${e.num}</div>
+      <div>
+        <div class="eixo-title">${e.title}</div>
+        <div class="eixo-sub">${e.sub}</div>
+      </div>
+      <div class="mat-badge" style="background:${mc.bg};color:${mc.text}">Nível ${e.mat} · ${e.matLabel}</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="eixo-body">
+      <div class="mat-bar"><div class="mat-fill" style="width:${e.mat*25}%;background:${mc.fill}"></div></div>
+      ${e.conclusao?`<div class="conclusao"><strong>Conclusão diagnóstico:</strong> ${e.conclusao}</div>`:''}
+      ${e.f3?`<div class="f3box">→ <strong>Fase 3:</strong> ${e.f3}</div>`:''}
+      ${e.alerta?`<div class="alerta">${e.alerta}</div>`:''}
+      ${e.alertaFiscal?`<div class="alerta-fiscal">⚠ ${e.alertaFiscal}</div>`:''}
+      ${e.cruzamento?`<div class="cruzamento">⚡ <strong>Cruzamento de fontes:</strong> ${e.cruzamento}</div>`:''}
+      <div class="sec-label">Gaps confirmados</div>
+      ${e.gaps.map(g=>`
+        <div class="achado">
+          <div class="achado-dot" style="background:${g.conf?'#E24B4A':'#D4752A'}"></div>
+          <div class="achado-text ${g.conf?'':'hyp'}">${g.t}
+            <span class="tag ${g.conf?'tag-conf':'tag-hyp'}">${g.conf?'CONFIRMADO':'HIPÓTESE'}</span>
+            ${srcTag(g.src)}
+            <span style="font-size:11px;color:#9B9B9B;margin-left:4px">· ${g.fontes}</span>
+          </div>
+        </div>`).join('')}
+      <div class="sec-label">Oportunidades</div>
+      ${e.oportunidades.map(o=>`
+        <div class="achado">
+          <div class="achado-dot" style="background:${o.conf?'#4A9E5C':'#8AB89A'}"></div>
+          <div class="achado-text ${o.conf?'':'hyp'}">${o.t}
+            <span class="tag ${o.conf?'tag-conf':'tag-hyp'}">${o.conf?'CONFIRMADO':'HIPÓTESE'}</span>
+            ${o.novo?'<span class="tag tag-novo">NOVO · entrega</span>':''}
+            ${srcTag(o.src)}
+            <span style="font-size:11px;color:#9B9B9B;margin-left:4px">· ${o.fontes}</span>
+          </div>
+        </div>`).join('')}
+      <div class="fonte">Fontes: Leonardo (22/04 + 13/05) · Leandro (24/04) · Vitor/Giovana (24/04) · Andreia (30/04) · Kelly (12/05) · Luis Renato (22/05) · Marcela (27/05) · Ismael (10/06) · Reunião de entrega (06/07)</div>
+    </div>`;
+  cont.appendChild(card);
+});
+
+function toggle(i){
+  document.querySelectorAll('.eixo')[i].classList.toggle('open');
+}
+</script>
+</body>
+</html>
