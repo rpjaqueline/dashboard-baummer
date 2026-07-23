@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Ação — Baummer Semijoias</title>
+<style>
+:root{
+  --purple:#4A1C6B; --purple-deep:#341049; --purple-soft:#F4EFFA; --purple-line:#E2D6F2;
+  --orange:#E65C00; --orange-soft:#FDEEE3;
+  --teal:#136B63; --teal-soft:#E4F3F1;
+  --gray:#6B6478; --gray-soft:#F1EFF5;
+  --ink:#241934; --paper:#FAF8FC; --card:#FFFFFF; --line:#E7E1F0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+
+/* header */
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:22px;flex-wrap:wrap}
+.head h1{font-size:23px;font-weight:700;color:var(--purple-deep);letter-spacing:-.01em}
+.head p{font-size:13px;color:var(--gray);margin-top:4px}
+.stat-row{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;text-align:center;min-width:64px}
+.stat b{display:block;font-size:18px;color:var(--purple)}
+.stat span{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.04em}
+
+/* sequencia critica */
+.chain-section{background:var(--purple-deep);border-radius:16px;padding:20px 22px;margin-bottom:22px;color:#fff}
+.chain-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#C9A8E8;margin-bottom:3px}
+.chain-sub{font-size:12.5px;color:#D9C9EC;margin-bottom:16px;max-width:720px}
+.chains{display:flex;flex-direction:column;gap:10px}
+.chain-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px}
+.chain-label{font-size:10.5px;color:#B79BD6;width:130px;flex-shrink:0}
+.node{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:4px 12px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap}
+.node:hover{background:rgba(255,255,255,.2)}
+.node.blocker{background:var(--orange);border-color:var(--orange)}
+.arrow{color:#8C6EAD;font-size:13px}
+
+/* filters */
+.filters{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:20px;position:sticky;top:12px;z-index:10;box-shadow:0 4px 18px rgba(74,28,107,.06)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.filter-row:last-child{margin-bottom:0}
+.filter-label{font-size:10.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;width:78px;flex-shrink:0}
+.pill{border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:12px;padding:6px 13px;border-radius:20px;cursor:pointer;transition:.15s;font-weight:500}
+.pill:hover{border-color:var(--purple)}
+.pill.active{background:var(--purple);border-color:var(--purple);color:#fff}
+.pill.active.pri-imediata{background:var(--orange);border-color:var(--orange)}
+.pill.active.pri-decisao{background:var(--teal);border-color:var(--teal)}
+#search{flex:1;min-width:180px;border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:12.5px;font-family:inherit;color:var(--ink)}
+#search:focus{outline:none;border-color:var(--purple)}
+.clear-btn{font-size:11.5px;color:var(--purple);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit;padding:4px 2px}
+
+/* results count */
+.count-bar{font-size:12px;color:var(--gray);margin-bottom:12px;padding-left:2px}
+.count-bar b{color:var(--ink)}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:.15s}
+.card.hidden{display:none}
+.card-head{padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-num{font-size:11px;font-weight:800;color:var(--orange)}
+.card-title{font-size:14px;font-weight:700;color:var(--purple-deep);line-height:1.3;margin-top:2px}
+.chev{color:var(--gray);font-size:11px;flex-shrink:0;transition:transform .2s;margin-top:2px}
+.card.open .chev{transform:rotate(180deg)}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;text-transform:uppercase;letter-spacing:.03em}
+.b-onda1{background:var(--orange-soft);color:var(--orange)}
+.b-onda2{background:var(--purple-soft);color:var(--purple)}
+.b-onda3{background:var(--teal-soft);color:var(--teal)}
+.b-onda0{background:var(--gray-soft);color:var(--gray)}
+.b-frente{background:#F1EFF5;color:var(--gray)}
+.people{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-size:10.5px;background:var(--paper);border:1px solid var(--line);color:var(--ink);padding:2px 9px;border-radius:10px;cursor:pointer}
+.chip:hover{border-color:var(--purple);color:var(--purple)}
+.chip.dep-flag{background:var(--orange-soft);border-color:var(--orange);color:var(--orange);font-weight:600}
+.card-body{display:none;border-top:1px solid var(--line);padding:14px 16px 16px;background:#FDFCFE}
+.card.open .card-body{display:block}
+.field{margin-bottom:10px}
+.field:last-child{margin-bottom:0}
+.field-label{font-size:10.5px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.field-text{font-size:12.5px;color:var(--ink);line-height:1.55}
+.field-obs{font-size:12px;color:var(--gray);font-style:italic;background:var(--purple-soft);padding:8px 10px;border-radius:8px;border-left:3px solid var(--purple)}
+.no-results{text-align:center;padding:50px 20px;color:var(--gray);font-size:13px}
+
+@media(max-width:640px){
+  .filter-label{width:100%;margin-bottom:2px}
+  .chain-label{width:auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <h1>Plano de Ação Estratégico — Baummer Semijoias</h1>
+      <p>29 ações · 5 frentes · 3 ondas de execução · clique nos filtros ou nos nomes para navegar</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><b>29</b><span>Ações</span></div>
+      <div class="stat"><b>5</b><span>Frentes</span></div>
+      <div class="stat"><b>3</b><span>Ondas</span></div>
+    </div>
+  </div>
+
+  <div class="chain-section">
+    <div class="chain-title">Sequência crítica</div>
+    <div class="chain-sub">Estas ações destravam outras à frente — nem sempre na mesma frente ou onda. Clique em qualquer nó para abrir a ação.</div>
+    <div class="chains" id="chains"></div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-row">
+      <span class="filter-label">Onda</span>
+      <div class="pill active" data-f="onda" data-v="all">Todas</div>
+      <div class="pill" data-f="onda" data-v="0">Imediata</div>
+      <div class="pill" data-f="onda" data-v="1">Onda 1 · 0–45d</div>
+      <div class="pill" data-f="onda" data-v="2">Onda 2 · 45–120d</div>
+      <div class="pill" data-f="onda" data-v="3">Onda 3 · 120–210d</div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Frente</span>
+      <div class="pill active" data-f="frente" data-v="all">Todas</div>
+      <div class="pill" data-f="frente" data-v="1">1 · COF</div>
+      <div class="pill" data-f="frente" data-v="2">2 · Comercial</div>
+      <div class="pill" data-f="frente" data-v="3">3 · Produto</div>
+      <div class="pill" data-f="frente" data-v="4">4 · Marketing</div>
+      <div class="pill" data-f="frente" data-v="5">5 · Rede</div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Prioridade</span>
+      <div class="pill active" data-f="pri" data-v="all">Todas</div>
+      <div class="pill" data-f="pri" data-v="imediata">Imediata</div>
+      <div class="pill" data-f="pri" data-v="estrutur">Estruturante</div>
+      <div class="pill" data-f="pri" data-v="complementar">Complementar</div>
+      <div class="pill" data-f="pri" data-v="decisao">Decisão consciente</div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Responsável</span>
+      <div id="peoplePills"></div>
+    </div>
+    <div class="filter-row">
+      <input type="text" id="search" placeholder="Buscar por palavra-chave (ex: Linx, INPI, consultor)...">
+      <button class="clear-btn" onclick="resetFilters()">Limpar filtros</button>
+    </div>
+  </div>
+
+  <div class="count-bar" id="countBar"></div>
+  <div class="grid" id="grid"></div>
+  <div class="no-results" id="noResults" style="display:none">Nenhuma ação corresponde a esses filtros.</div>
+
+</div>
+
+<script>
+const ACOES = [
+{n:1,titulo:"Resolução da marca no INPI",frente:1,onda:[1],pri:"imediata",
+ quem:["Leonardo","Jurídico"],dep:[],
+ oque:"Decisão formal sobre a marca definitiva — aguardar o desfecho do recurso ou migrar para a alternativa já registrada (BMR). Se a migração se confirmar, o escopo inclui o rebranding físico da rede: fachadas, comunicação visual e materiais das 33 unidades, com custo assumido pela franqueadora.",
+ porque:"Marca sem registro é risco jurídico para toda a rede, com conflito identificado com fabricante estrangeiro. A pendência é anterior aos franqueados, quem a causou arca com a correção.",
+ quando:"Onda 1 · decisão até D+45.",
+ como:"Parecer do jurídico sobre a probabilidade do recurso; se desfavorável, ativar o plano BMR. A troca de fachada entra na renovação contratual (ação 9).",
+ quanto:"Honorários jurídicos + provisão de rebranding físico. A orçar."},
+{n:2,titulo:"Regularização tributária dos royalties",frente:1,onda:[1],pri:"imediata",
+ quem:["Kelly","Jurídico"],dep:[],
+ oque:"Parecer de especialista tributário definindo o modelo de cobrança — nota fiscal de serviço ou incorporação da taxa ao custo do produto.",
+ porque:"Royalties cobrados hoje sem nota fiscal de serviço — situação fiscalmente irregular.",
+ quando:"Onda 1 · parecer até D+45.",
+ como:"Kelly consolida a prática atual e leva ao especialista com as duas alternativas mapeadas no diagnóstico.",
+ quanto:"Consulta tributária, a orçar."},
+{n:3,titulo:"Workshop de identidade da franqueadora",frente:1,onda:[1],pri:"imediata",
+ quem:["Sócios","Head de Franquias"],dep:[],
+ oque:"Documento de uma página, com a intenção de responder o que a Baummer é, para quem existe e para onde vai, aprovado e assinado pelos sócios.",
+ porque:"Sem visão compartilhada, cada área caminha por um objetivo diferente sem perceber. É a pré-condição relacional de tudo o que vem depois.",
+ quando:"Onda 1 · até D+30.",
+ como:"Sessão única de 3 horas, estruturada. O documento sai praticamente pronto da sala."},
+{n:4,titulo:"Perfil do cliente ideal documentado",frente:1,onda:[1],pri:"imediata",
+ quem:["Head de Franquias","Analista Sênior Comercial","Andreia","Sócios"],dep:[],
+ oque:"Documento de perfil do consumidor final construído a partir dos dados e da vivência da rede — combinando dados do sistema Linx, classe e estilo de vida — com implicações para mix, comunicação e contratação de vendedores.",
+ porque:"Sem saber para quem vende, o produto vira chute e o marketing vira ruído. As melhores leituras de cliente hoje estão na ponta, com os franqueados.",
+ quando:"Onda 1 · até D+45.",
+ como:"Brainstorm com 2 a 3 franqueados-âncora + cruzamento com dados de cadastro. É o primeiro gesto concreto de rede colaborativa, sem custo e sem criar comitê."},
+{n:5,titulo:"Perfil do franqueado ideal + critérios objetivos de aprovação",frente:1,onda:[1],pri:"imediata",
+ quem:["Head de Franquias","Leonardo","Leandro"],dep:[],
+ oque:"Documento-filtro formal de captação: perfil (gestão/supervisão em franquias, empreendedor, afinidade com moda, franqueado operador) + critérios eliminatórios e classificatórios.",
+ porque:"A entrada na rede hoje acontece só por indicação ou vínculo pessoal. O perfil de maior potencial de sucesso já está confirmado na Fase 2.",
+ quando:"Onda 1 · até D+45.",
+ como:"Matéria-prima pronta (entrevistas F2 + caso Araraquara); redação + validação, sem pesquisa nova."},
+{n:6,titulo:"Política de royalties, FPP e isenções",frente:1,onda:[1,2],pri:"estrutur",
+ quem:["Sócios","Kelly"],dep:[2],
+ oque:"Definição formal do percentual de royalties e do percentual de FPP sobre o custo da mercadoria comprada — ambos ainda a decidir pelos sócios —, condições de cobrança e regra documentada de isenção.",
+ porque:"Isenções informais viram precedente e expectativa de rede. Sem receita de serviço, a franqueadora não financia área comercial e marketing — o elo principal para fortalecimento da rede.",
+ quando:"Onda 1–2 · política aprovada até D+60.",
+ obs:"A política só deve valer depois que a contrapartida existir (ações 11, 12 e 27) — cobrar antes disso repete o problema que já fragilizou a rede."},
+{n:7,titulo:"Política de devolução de peças com defeito",frente:1,onda:[1],pri:"complementar",
+ quem:["Vitor"],dep:[],
+ oque:"Protocolo único de devolução (prazo, critério, forma de crédito) + levantamento do crédito em aberto na rede hoje (peças a devolver com franqueados).",
+ porque:"Cada franqueado opera no próprio ritmo e a franqueadora não sabe o volume real do passivo.",
+ quando:"Onda 1 · até D+45.",
+ como:"Levantamento primeiro, protocolo em seguida. Comunicação à rede pelo comunicado mensal (ação 29)."},
+{n:8,titulo:"Atualização da COF",frente:1,onda:[2],pri:"estrutur",
+ quem:["Head de Franquias","Jurídico"],dep:[1,2,6,13],
+ oque:"Circular de Oferta de Franquia nova, com dados reais de investimento, modelo de viabilidade validado, política de taxas e operação atual.",
+ porque:"COF desatualizada e sem dados de viabilidade impede apresentar o negócio com segurança jurídica e técnica.",
+ quando:"Onda 2 · até D+120.",
+ quanto:"Honorários jurídicos, a orçar."},
+{n:9,titulo:"Regularização contratual da rede",frente:1,onda:[2,3],pri:"estrutur",
+ quem:["Head de Franquias","Jurídico"],dep:[],
+ oque:"100% da rede com contrato assinado e atualizado. A renovação carrega a cesta de cláusulas: padronização, reporte obrigatório com uso do Linx, política de taxas, transição de marca/fachada e visita técnica anual como obrigação da franqueadora.",
+ porque:"Contratos ausentes ou vencidos fragilizam qualquer exigência de padrão, reporte ou cobrança.",
+ quando:"Onda 2–3 · início em D+75, conclusão até D+180.",
+ como:"Sequenciar começando pelos franqueados-âncora — a adesão deles puxa a rede."},
+{n:10,titulo:"Desenho e implantação da área comercial",frente:2,onda:[2],pri:"estrutur",
+ quem:["Head de Franquias","Sócios"],dep:[11],
+ oque:"Área formalizada com papéis, rotina semanal, indicadores e orçamento, sobre três perfis complementares: consultor de campo, analista sênior comercial (ex analista da fábrica) e Vitor. Define também o organograma futuro da área.",
+ porque:"Prioridade máxima do diagnóstico: sem área comercial, os demais avanços não têm quem os execute. Nenhum perfil interno cobre sozinho a lacuna de experiência em franquia.",
+ quando:"Onda 2 · área operando em D+90."},
+{n:11,titulo:"Contratação do consultor de campo",frente:2,onda:[1,2],pri:"estrutur",
+ quem:["Head de Franquias","Sócios"],dep:[],
+ oque:"Perfil definido, vaga aberta, profissional contratado e integrado — experiência comprovada em consultoria de campo de franquias.",
+ porque:"A área não tem braço para dar velocidade às execuções. É quem executa visitas, implanta manuais e sustenta o suporte na ponta.",
+ quando:"Onda 1 (perfil e vaga até D+30) · Onda 2 (contratado até D+90).",
+ quanto:"R$ 8 a 13 mil/mês CLT (ou avaliar contrato PJ), conforme praça e senioridade.",
+ obs:"O custo do consultor é coberto pela formalização das taxas na ação 6."},
+{n:12,titulo:"Estruturação do canal com os franqueados",frente:2,onda:[1],pri:"imediata",
+ quem:["Vitor","Head de Franquias"],dep:[],
+ oque:"Papel do canal humano com a rede (\"Bauminha\") redesenhado com foco em proatividade e vínculo — rotina de contato e escopo de resolução — e integração da substituta concluída.",
+ porque:"Canal em transição. Franqueado que dá feedback e não vê retorno para de contribuir.",
+ quando:"Onda 1 · papel estruturado até D+45."},
+{n:13,titulo:"DRE gerencial padronizado",frente:2,onda:[1,2],pri:"estrutur",
+ quem:["Kelly","Vitor"],dep:[],
+ oque:"Modelo único de DRE por regime de competência para todas as unidades, com plano de contas simplificado e orientação de preenchimento e leitura.",
+ porque:"Franqueados sem padrão nem clareza de preenchimento e leitura de DRE, o que impede comparabilidade entre unidades.",
+ quando:"Onda 1–2 · modelo pronto até D+60."},
+{n:14,titulo:"Uso obrigatório do Linx com reporte individual por unidade",frente:2,onda:[2],pri:"complementar",
+ quem:["Vitor","Analista Sênior Comercial"],dep:[9],
+ oque:"As 4 lojas que não reportam — ou consolidam múltiplas unidades em uma chave — passam a informar individualmente, com uso do Linx formalizado como obrigação contratual.",
+ porque:"Reporte ausente ou consolidado distorce a análise de performance e compromete o modelo financeiro.",
+ quando:"Onda 2 · até D+120.",
+ como:"Primeiro por adesão (painel da ação 15 é a contrapartida visível), depois por cláusula."},
+{n:15,titulo:"Painel de indicadores da rede",frente:2,onda:[2],pri:"estrutur",
+ quem:["Head de Franquias","Vitor","Analista Sênior Comercial"],dep:[],
+ oque:"Etapa zero: definição formal de quais indicadores acompanhar — vendas, operação e estoque. Em seguida, painel único alimentado pelo Linx, com rotina mensal de leitura.",
+ porque:"A franqueadora não identifica unidade em queda antes de o problema se agravar. O dado do Linx existe e nunca foi explorado.",
+ quando:"Onda 2 · definição até D+75; primeira versão em D+90."},
+{n:16,titulo:"Protocolo de aprovação financeira de nova unidade",frente:2,onda:[2],pri:"estrutur",
+ quem:["Vitor","Head de Franquias"],dep:[13],
+ oque:"Planilha simuladora com todas as linhas do DRE padrão, impostos por faixa de faturamento e três cenários (conservador, realista, otimista). Uso duplo: apresentar viabilidade ao candidato e aprovar a praça antes da assinatura.",
+ porque:"Expansão sem análise prévia foi o padrão histórico. Protege investidor e franqueadora.",
+ quando:"Onda 2 · protocolo e planilha até D+90."},
+{n:17,titulo:"Inteligência de praças",frente:2,onda:[2,3],pri:"estrutur",
+ quem:["Vitor","Head de Franquias","Leandro"],dep:[],
+ oque:"Cruzamento dos 12 meses de faturamento das 33 lojas com perfil de shopping, localização e vizinhança — gerando faixas de performance por tipo de praça e critério objetivo de aprovação de ponto.",
+ porque:"Expansão histórica por oportunidade e relacionamento, sem processo.",
+ quando:"Onda 2–3 · primeira versão até D+120."},
+{n:18,titulo:"Rotina de visitas técnicas",frente:2,onda:[3],pri:"estrutur",
+ quem:["Consultor de Campo"],dep:[11],
+ oque:"Ronda estruturada de lojas combinando checklist de padrão com pelo menos uma frente de desenvolvimento: treinamento de vendas, leitura de números ou análise de estoque.",
+ porque:"Suporte presencial inexistente — sem visitas da franqueadora até hoje.",
+ quando:"Onda 3 · primeira ronda completa até D+150.",
+ obs:"Visita que só fiscaliza gera resistência; a que desenvolve gera demanda. Recomendação contratual: mínimo 1 visita/ano por unidade."},
+{n:19,titulo:"Revisão e reposicionamento dos manuais",frente:2,onda:[2,3],pri:"estrutur",
+ quem:["Consultor de Campo","Analista Sênior Comercial","Head de Franquias"],dep:[11],
+ oque:"Manuais operacionais, de gestão e treinamento revisados, atualizados e relançados como referência viva da operação.",
+ porque:"Os materiais existem, mas estão desatualizados e desconsiderados. Manual ignorado é pior que manual ausente.",
+ quando:"Onda 2–3 · manual de loja até D+120; demais até D+180."},
+{n:20,titulo:"Boas práticas e playbook (manual estratégico) do funil de loja",frente:2,onda:[2,3],pri:"estrutur",
+ quem:["Analista Sênior Comercial","Consultor de Campo"],dep:[18],
+ oque:"Em duas fases: (a) levantamento de boas práticas e diagnóstico do funil — conversão, atendimento — usando as visitas técnicas como campo; (b) playbook por etapa do funil: atração, conversão, cadastro, pós-venda, recorrência.",
+ porque:"Recorrência é dor real da rede (89% de clientes novos). O funil precisa ser trabalhado na ordem.",
+ quando:"Onda 2 (levantamento; playbook até D+120) · implantação na Onda 3."},
+{n:21,titulo:"Arquitetura de portfólio",frente:3,onda:[2],pri:"estrutur",
+ quem:["Andreia","Head de Franquias"],dep:[22],
+ oque:"Modelo de arquitetura de portfólio: ritmo de novidade, disponibilidade de perenes, calendário de lançamentos. A estrutura perenes + tendência semanal + drops mensais entra como hipótese de partida a confirmar pela assessoria técnica.",
+ porque:"O critério atual é preço por categoria, raiz da baixa recorrência (menos de 15% de clientes fiéis).",
+ quando:"Onda 2 · modelo definido até D+120."},
+{n:22,titulo:"Critérios técnicos de curadoria",frente:3,onda:[2],pri:"estrutur",
+ quem:["Andreia"],dep:[],
+ oque:"Estudar e definir critérios técnicos — coleção que conta história, peças que se complementam. Inclui contratar assessoria de moda especializada e assinar plataforma de tendências.",
+ porque:"Peças da mesma categoria não se complementam visualmente e a expertise técnica de moda não existe internamente.",
+ quando:"Onda 2 · assessoria contratada até D+75.",
+ quanto:"Assessoria + plataforma, a orçar."},
+{n:23,titulo:"Calendário de portfólio comunicado à rede",frente:3,onda:[1,2],pri:"complementar",
+ quem:["Andreia","Analista Sênior Comercial"],dep:[],
+ oque:"O que entra, o que permanece, regra de descontinuação com aviso prévio. Inclui a decisão sobre os kits comemorativos — hoje sem critério visual: ou ganham referência visual definida antes da seleção, ou são descontinuados.",
+ porque:"Descontinuação sem aviso foi queixa consistente da F2. O franqueado não tem previsibilidade do portfólio.",
+ quando:"Onda 1 (regra de descontinuação até D+45) · Onda 2 (calendário completo e decisão dos kits)."},
+{n:24,titulo:"Planejamento de compras por meta de venda",frente:3,onda:[2,3],pri:"estrutur",
+ quem:["Andreia","Kelly","Vitor"],dep:[],
+ oque:"Compra dimensionada pela meta de venda do período, por categoria. A meta é construída com o histórico (LY) como base, ajustada por sazonalidade e desempenho recente.",
+ porque:"Assertividade de estoque e giro constante o ano inteiro, não só nas datas sazonais.",
+ quando:"Onda 2–3 · primeiro ciclo planejado por meta até D+150."},
+{n:25,titulo:"Estudo de importação direta",frente:3,onda:[3],pri:"decisao",
+ quem:["Sócios","Kelly"],dep:[24],
+ oque:"Estudo formal de custo × lead time × caixa — economia estimada de ~20% contra ciclo de 3 meses — com decisão documentada: fazer, não fazer ou modelo híbrido.",
+ porque:"Os sócios levantaram a cautela na entrega: a economia pode não compensar frente ao markup já praticado.",
+ quando:"Onda 3 · decisão documentada até D+210."},
+{n:26,titulo:"Reativação do Instagram + atualização do site",frente:4,onda:[0],pri:"imediata",
+ quem:["Leonardo","Leandro"],dep:[],
+ oque:"Perfil ativo com ritmo constante de postagem e site com informações verídicas. Inclui rever o layout do site e decidir se permanece aberto para venda no varejo ou passa a ser institucional/atacado.",
+ porque:"Instagram parado desde setembro de 2024 é o gap mais visível do diagnóstico: mina autoridade de marca e legitimidade do FPP.",
+ quando:"Imediato — único item que não depende de D0.",
+ como:"Começar simples: produto, prova social das lojas, bastidores de fábrica."},
+{n:27,titulo:"Estruturação da função de marketing",frente:4,onda:[2],pri:"estrutur",
+ quem:["Head de Franquias","Sócios"],dep:[6],
+ oque:"Decisão de modelo — contratação interna ou parceiro externo — seguida da contratação, com escopo mínimo: gestão de redes, conteúdo padronizado interno e material de campanha.",
+ porque:"Instagram reativado sem dono não se sustenta por 60 dias. É a contrapartida que legitima a cobrança do FPP.",
+ quando:"Onda 2 · decisão até D+90; função operando até D+120.",
+ quanto:"Conforme o modelo — financiado pelo FPP formalizado na ação 6."},
+{n:28,titulo:"Kits de campanha física, digital local e inaugural",frente:4,onda:[2,3],pri:"complementar",
+ quem:["Andreia"],dep:[27],
+ oque:"Material de PDV por drop e data comemorativa + kit de divulgação digital local (WhatsApp/Instagram da loja) + kit inaugural documentado para novas unidades.",
+ porque:"As lojas não têm nada visual que chame atenção de longe. Inaugurações acontecem sem material nem divulgação.",
+ quando:"Onda 2–3 · primeiro kit até D+180.",
+ quanto:"Produção gráfica, a orçar — coberta pelo FPP."},
+{n:29,titulo:"Comunicado mensal à rede",frente:5,onda:[2],pri:"complementar",
+ quem:["Analista Sênior Comercial","Head de Franquias"],dep:[],
+ oque:"Comunicado estruturado e de formato fixo: retorno sobre feedbacks (\"vocês pediram, fizemos\"), novidades de portfólio, boa prática da rede e agenda.",
+ porque:"Franqueado que dá feedback e não vê retorno para de contribuir. Estrutura de participação sem entrega já falhou antes.",
+ quando:"Onda 2 · primeira edição até D+105; mensal a partir daí."},
+];
+
+const FRENTE_NOME = {1:"F1 · COF",2:"F2 · Comercial",3:"F3 · Produto",4:"F4 · Marketing",5:"F5 · Rede"};
+const PRI_NOME = {imediata:"Prioridade imediata",estrutur:"Estruturante",complementar:"Complementar",decisao:"Decisão consciente"};
+const PEOPLE = ["Head de Franquias","Leonardo","Leandro","Kelly","Andreia","Vitor","Sócios","Consultor de Campo","Analista Sênior Comercial","Jurídico"];
+
+const CHAINS = [
+ {label:"Financiamento",path:[2,6,[11,12,27]]},
+ {label:"Braço de campo",path:[11,[10,18,19]]},
+ {label:"Dados e viabilidade",path:[13,[8,16]]},
+ {label:"Produto",path:[22,21,24,25]},
+ {label:"Contrato → reporte",path:[9,14]},
+];
+
+let state = {onda:"all",frente:"all",pri:"all",people:new Set(),search:""};
+
+function actionById(id){return ACOES.find(a=>a.n===id);}
+
+function renderChains(){
+  const el = document.getElementById("chains");
+  el.innerHTML = CHAINS.map(c=>{
+    const parts = c.path.map(step=>{
+      if(Array.isArray(step)){
+        return step.map(id=>`<span class="node" onclick="openAction(${id})">${id}</span>`).join('<span class="arrow"> · </span>');
+      }
+      return `<span class="node blocker" onclick="openAction(${step})">${step}</span>`;
+    });
+    return `<div class="chain-row"><span class="chain-label">${c.label}</span>${parts.join('<span class="arrow">→</span>')}</div>`;
+  }).join("");
+}
+
+function blockedBy(id){
+  return ACOES.filter(a=>a.dep.includes(id)).map(a=>a.n);
+}
+
+function renderPeoplePills(){
+  const el = document.getElementById("peoplePills");
+  el.innerHTML = PEOPLE.map(p=>`<span class="pill" data-person="${p}" onclick="togglePerson('${p}')">${p}</span>`).join(" ");
+}
+
+function togglePerson(p){
+  if(state.people.has(p)) state.people.delete(p); else state.people.add(p);
+  render();
+}
+
+function ondaBadgeClass(o){ return o===0? "b-onda0" : o===1?"b-onda1":o===2?"b-onda2":"b-onda3"; }
+function ondaLabel(arr){
+  if(arr.includes(0)) return "Imediata";
+  return "Onda " + arr.join("–");
+}
+
+function cardHTML(a){
+  const unlocks = blockedBy(a.n);
+  const peopleChips = a.quem.map(p=>`<span class="chip" onclick="event.stopPropagation();togglePerson('${p}')">${p}</span>`).join("");
+  const depFlag = unlocks.length ? `<span class="chip dep-flag">destrava ${unlocks.length===1?"a ação "+unlocks[0]:unlocks.length+" ações"}</span>` : "";
+  return `
+  <div class="card" id="card-${a.n}" data-n="${a.n}">
+    <div class="card-head" onclick="toggleCard(${a.n})">
+      <div class="card-top">
+        <div>
+          <div class="card-num">Ação ${a.n}</div>
+          <div class="card-title">${a.titulo}</div>
+        </div>
+        <div class="chev">▾</div>
+      </div>
+      <div class="badges">
+        <span class="badge ${ondaBadgeClass(a.onda[0])}">${ondaLabel(a.onda)}</span>
+        <span class="badge b-frente">${FRENTE_NOME[a.frente]}</span>
+      </div>
+      <div class="people">${peopleChips}${depFlag}</div>
+    </div>
+    <div class="card-body">
+      <div class="field"><div class="field-label">O quê</div><div class="field-text">${a.oque}</div></div>
+      <div class="field"><div class="field-label">Por quê</div><div class="field-text">${a.porque}</div></div>
+      <div class="field"><div class="field-label">Quando</div><div class="field-text">${a.quando}</div></div>
+      ${a.como?`<div class="field"><div class="field-label">Como</div><div class="field-text">${a.como}</div></div>`:""}
+      ${a.quanto?`<div class="field"><div class="field-label">Quanto</div><div class="field-text">${a.quanto}</div></div>`:""}
+      ${a.dep.length?`<div class="field"><div class="field-label">Depende de</div><div class="field-text">${a.dep.map(d=>`<span class="chip" onclick="event.stopPropagation();openAction(${d})">Ação ${d}</span>`).join(" ")}</div></div>`:""}
+      ${a.obs?`<div class="field field-obs">${a.obs}</div>`:""}
+    </div>
+  </div>`;
+}
+
+function toggleCard(n){
+  document.getElementById("card-"+n).classList.toggle("open");
+}
+function openAction(n){
+  document.querySelectorAll(".card").forEach(c=>c.classList.remove("open"));
+  const el = document.getElementById("card-"+n);
+  if(el){ el.classList.add("open"); el.scrollIntoView({behavior:"smooth",block:"center"}); }
+}
+
+function matches(a){
+  if(state.onda!=="all" && !a.onda.includes(parseInt(state.onda))) return false;
+  if(state.frente!=="all" && a.frente!==parseInt(state.frente)) return false;
+  if(state.pri!=="all" && a.pri!==state.pri) return false;
+  if(state.people.size){
+    let hasAll = [...state.people].every(p=>a.quem.includes(p));
+    if(!hasAll) return false;
+  }
+  if(state.search){
+    const hay = (a.titulo+" "+a.oque+" "+a.porque+" "+(a.como||"")+" "+(a.quanto||"")+" "+(a.obs||"")).toLowerCase();
+    if(!hay.includes(state.search.toLowerCase())) return false;
+  }
+  return true;
+}
+
+function render(){
+  document.querySelectorAll('.pill[data-f]').forEach(p=>{
+    p.classList.toggle("active", state[p.dataset.f]===p.dataset.v);
+  });
+  document.querySelectorAll('.pill[data-f="pri"]').forEach(p=>{
+    p.classList.remove("pri-imediata","pri-decisao");
+    if(p.dataset.v==="imediata") p.classList.add("pri-imediata");
+    if(p.dataset.v==="decisao") p.classList.add("pri-decisao");
+  });
+  document.querySelectorAll('.pill[data-person]').forEach(p=>{
+    p.classList.toggle("active", state.people.has(p.dataset.person));
+  });
+
+  const grid = document.getElementById("grid");
+  const visible = ACOES.filter(matches);
+  grid.innerHTML = visible.map(cardHTML).join("");
+  document.getElementById("noResults").style.display = visible.length? "none":"block";
+  document.getElementById("countBar").innerHTML = `<b>${visible.length}</b> de 29 ações`;
+}
+
+function resetFilters(){
+  state = {onda:"all",frente:"all",pri:"all",people:new Set(),search:""};
+  document.getElementById("search").value = "";
+  render();
+}
+
+document.querySelectorAll('.pill[data-f]').forEach(p=>{
+  p.addEventListener("click",()=>{ state[p.dataset.f] = p.dataset.v; render(); });
+});
+document.getElementById("search").addEventListener("input",e=>{ state.search = e.target.value; render(); });
+
+renderChains();
+renderPeoplePills();
+render();
+</script>
+</body>
+</html>
